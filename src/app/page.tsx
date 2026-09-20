@@ -26,7 +26,7 @@ export default function Home() {
       <AgentRoster />
 
       {/* 08. Integrated UI Showcase (hero-section-6) */}
-      <section className="relative w-full border-t border-crew-border/60">
+      <section className="relative w-full">
         <HeroSection6 />
       </section>
 

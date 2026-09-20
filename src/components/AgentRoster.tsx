@@ -1,12 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import {
   Zap,
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
   CheckCircle2,
   Terminal,
   Activity,
@@ -15,7 +11,6 @@ import {
   Search,
   Code2,
   Palette,
-  Send,
 } from "lucide-react";
 import { SpritePortrait } from "@/components/office/SpritePortrait";
 import type { OfficeCharacterName } from "@/live-office/scene/office/cast";
@@ -252,27 +247,10 @@ const STAGES = [
   { step: "06", label: "Ship", agentId: "marketing" },
 ];
 
-const EXAMPLE_MISSIONS = [
-  "Build a landing page for my startup",
-  "Run a market research report",
-  "Design a product demo",
-  "Launch a marketing campaign",
-];
-
 export default function AgentRoster() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [missionInput, setMissionInput] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const selectedAgent = AGENTS[selectedIndex];
-
-  const handleNext = () => {
-    setSelectedIndex((prev) => (prev + 1) % AGENTS.length);
-  };
-
-  const handleBack = () => {
-    setSelectedIndex((prev) => (prev - 1 + AGENTS.length) % AGENTS.length);
-  };
 
   const handleSelectStage = (agentId: string) => {
     const idx = AGENTS.findIndex((a) => a.id === agentId);
@@ -281,18 +259,10 @@ export default function AgentRoster() {
     }
   };
 
-  const handleGenerate = () => {
-    if (!missionInput.trim()) return;
-    setIsGenerating(true);
-    setTimeout(() => {
-      setIsGenerating(false);
-    }, 1200);
-  };
-
   return (
     <section
       id="roster"
-      className="relative py-20 lg:py-28 bg-[#070A0E] text-slate-100 overflow-hidden select-none"
+      className="relative py-20 lg:py-24 bg-[#070A0E] text-slate-100 overflow-hidden select-none"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-sky-500/8 rounded-full blur-[140px] pointer-events-none" />
@@ -309,62 +279,23 @@ export default function AgentRoster() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* ============================================================ */}
-        {/* TOP HEADER SECTION */}
+        {/* HEADER */}
         {/* ============================================================ */}
-        <div className="relative mb-12 lg:mb-16">
-          {/* Floating Ultron Badge (Top-Left) */}
-          <div className="hidden lg:flex items-center gap-3 absolute -top-4 left-0 p-3 rounded-2xl bg-[#0c121c]/90 border border-[#1e293b] backdrop-blur-md max-w-xs shadow-xl shadow-black/40">
-            <div className="w-10 h-10 rounded-xl bg-red-950/60 border border-red-500/30 flex items-center justify-center relative overflow-hidden shrink-0">
-              <Image
-                src="/ultron-logo.png"
-                alt="Ultron"
-                width={32}
-                height={32}
-                className="w-7 h-7 object-contain drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]"
-              />
-            </div>
-            <div>
-              <div className="text-[10px] font-mono tracking-widest text-slate-400 font-bold uppercase">
-                ULTRON
-              </div>
-              <p className="text-xs text-slate-300 leading-snug">
-                Every mission starts with the right team.
-              </p>
-            </div>
-          </div>
+        <div className="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
+          <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-tight leading-tight">
+            <span className="text-[#F3F0EA]">SIX SPECIALISTS.</span>
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400">
+              ONE SHARED MISSION.
+            </span>
+          </h2>
 
-          {/* Top-Right Decorative Callouts */}
-          <div className="hidden lg:block absolute -top-2 right-0 text-right">
-            <div className="text-[11px] font-mono tracking-wider text-slate-500 uppercase">
-              Characters bring life to the workflow
-            </div>
-            <div className="text-[10px] font-mono text-slate-600 tracking-widest mt-1">
-              DIFFERENT SKILLS. ONE DIRECTION. A SMARTER TOMORROW.
-            </div>
-          </div>
-
-          {/* Main Title Center */}
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0c121c] border border-[#1e293b] text-slate-300 text-xs font-mono tracking-wider uppercase mb-4 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-              <span>ULTRON // MISSION CONTROL</span>
-            </div>
-
-            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-tight leading-tight">
-              <span className="text-[#F3F0EA]">SIX SPECIALISTS.</span>
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-fuchsia-400">
-                ONE SHARED MISSION.
-              </span>
-            </h2>
-
-            <p className="mt-4 text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-sans">
-              Assign the right AI agents, share the goal, and let Ultron coordinate
-              the work.
-              <br className="hidden sm:inline" />
-              From idea to execution — together.
-            </p>
-          </div>
+          <p className="mt-4 text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-sans">
+            Assign the right AI agents, share the goal, and let Ultron coordinate
+            the work.
+            <br className="hidden sm:inline" />
+            From idea to execution — together.
+          </p>
         </div>
 
         {/* ============================================================ */}
@@ -428,7 +359,7 @@ export default function AgentRoster() {
         {/* MAIN WORKSPACE CONSOLE */}
         {/* Left: Stepper | Center: Profile & Character | Right: Live Status */}
         {/* ============================================================ */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* ------------------------------------------------------------ */}
           {/* 1. LEFT VERTICAL STEPPER (Col 1-2 on desktop) */}
           {/* ------------------------------------------------------------ */}
@@ -656,103 +587,6 @@ export default function AgentRoster() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* ============================================================ */}
-        {/* BOTTOM INTERACTIVE MISSION PROMPT BAR */}
-        {/* ============================================================ */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0a0f18]/90 border border-[#1e293b] backdrop-blur-md shadow-xl mb-6">
-          {/* Input Box */}
-          <div className="flex items-center gap-3 bg-[#06090e] border border-[#1e293b] rounded-xl px-4 py-2.5 focus-within:border-sky-400 focus-within:shadow-[0_0_20px_rgba(56,189,248,0.2)] transition-all">
-            <Zap className="w-4 h-4 text-sky-400 shrink-0" />
-            <input
-              type="text"
-              value={missionInput}
-              onChange={(e) => setMissionInput(e.target.value)}
-              placeholder="Describe your mission..."
-              className="w-full bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none font-sans"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleGenerate();
-              }}
-            />
-            <button
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              className="shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white font-medium text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-sky-500/20 transition-all active:scale-95 disabled:opacity-50"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{isGenerating ? "Generating..." : "Generate with AI"}</span>
-            </button>
-          </div>
-
-          {/* Example Missions & Navigation Controls */}
-          <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Example Pills */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mr-1">
-                EXAMPLE MISSIONS:
-              </span>
-              {EXAMPLE_MISSIONS.map((ex, i) => (
-                <button
-                  key={i}
-                  onClick={() => setMissionInput(ex)}
-                  className="px-2.5 py-1 rounded-lg bg-[#080d15] hover:bg-[#121c2c] border border-[#1e293b] hover:border-sky-500/40 text-xs font-mono text-slate-300 transition-colors"
-                >
-                  {ex}
-                </button>
-              ))}
-            </div>
-
-            {/* Back / Next Controls */}
-            <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
-              <button
-                onClick={handleBack}
-                className="px-4 py-1.5 rounded-xl border border-[#1e293b] hover:border-slate-500 bg-[#080d15] text-xs font-mono text-slate-300 hover:text-white transition-all flex items-center gap-1.5"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back</span>
-              </button>
-              <button
-                onClick={handleNext}
-                className="px-4 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-semibold text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-sky-500/30 active:scale-95"
-              >
-                <span>Next</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ============================================================ */}
-        {/* BOTTOM STATEMENT & ULTRON BRANDING */}
-        {/* ============================================================ */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left border-t border-[#1e293b]/60 pt-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-red-950/60 border border-red-500/30 flex items-center justify-center overflow-hidden shrink-0">
-              <Image
-                src="/ultron-logo.png"
-                alt="Ultron"
-                width={24}
-                height={24}
-                className="w-5 h-5 object-contain"
-              />
-            </div>
-            <div>
-              <div className="text-[11px] font-mono tracking-widest text-slate-300 font-bold uppercase">
-                ULTRON
-              </div>
-              <div className="text-[10px] font-mono text-slate-500">
-                GIVE AI THE WORK. KEEP THE CONTROL.
-              </div>
-            </div>
-          </div>
-
-          <div className="inline-block px-5 py-2 rounded-full bg-[#0c121c] border border-[#1e293b] shadow-md">
-            <p className="font-mono text-xs sm:text-sm text-slate-300">
-              They don&apos;t just answer.{" "}
-              <span className="text-[#C92F36] font-bold">They work together.</span>
-            </p>
           </div>
         </div>
       </div>
