@@ -67,7 +67,7 @@ export default function HeroScroll() {
     const updateDimensions = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
       const displayWidth = canvas.clientWidth || window.innerWidth;
       const displayHeight = canvas.clientHeight || window.innerHeight;
 
@@ -94,7 +94,7 @@ export default function HeroScroll() {
     if (!ctx) return;
 
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "medium";
+    ctx.imageSmoothingQuality = "high";
 
     let animationId: number;
 
@@ -103,10 +103,10 @@ export default function HeroScroll() {
       const totalFrames = 276;
       targetFrameRef.current = scrollYProgress.get() * (totalFrames - 1);
 
-      // Snappy, fluid inertia lerp
+      // Ultra-smooth lerp interpolation
       const diff = targetFrameRef.current - currentFrameRef.current;
-      if (Math.abs(diff) > 0.0001) {
-        currentFrameRef.current += diff * 0.18;
+      if (Math.abs(diff) > 0.001) {
+        currentFrameRef.current += diff * 0.24;
       } else {
         currentFrameRef.current = targetFrameRef.current;
       }
@@ -131,18 +131,15 @@ export default function HeroScroll() {
         if (targetImage && targetImage.complete && targetImage.naturalWidth > 0) {
           const imgWidth = targetImage.naturalWidth;
           const imgHeight = targetImage.naturalHeight;
-          const headerHeight = 0;
-          const scale = displayWidth / imgWidth;
-          const scaledWidth = displayWidth;
+          const scale = Math.max(displayWidth / imgWidth, displayHeight / imgHeight);
+          const scaledWidth = imgWidth * scale;
           const scaledHeight = imgHeight * scale;
-          const offsetY =
-            scaledHeight < displayHeight
-              ? (displayHeight - scaledHeight) / 2
-              : 0;
+          const offsetX = (displayWidth - scaledWidth) / 2;
+          const offsetY = (displayHeight - scaledHeight) / 2;
 
           ctx.fillStyle = "#0B0E14";
           ctx.fillRect(0, 0, displayWidth, displayHeight);
-          ctx.drawImage(targetImage, 0, offsetY, scaledWidth, scaledHeight);
+          ctx.drawImage(targetImage, offsetX, offsetY, scaledWidth, scaledHeight);
         }
         ctx.restore();
         animationId = requestAnimationFrame(render);
@@ -176,16 +173,12 @@ export default function HeroScroll() {
         const imgWidth = img1.naturalWidth;
         const imgHeight = img1.naturalHeight;
 
-        const headerHeight = 0;
-        const scale = displayWidth / imgWidth;
-        const scaledWidth = displayWidth;
+        // COVER VIEWPORT SCALING: Full bleed with 2D centering (zero black bars anywhere)
+        const scale = Math.max(displayWidth / imgWidth, displayHeight / imgHeight);
+        const scaledWidth = imgWidth * scale;
         const scaledHeight = imgHeight * scale;
-        const offsetX = 0;
-
-        const offsetY =
-          scaledHeight < displayHeight
-            ? (displayHeight - scaledHeight) / 2
-            : 0;
+        const offsetX = (displayWidth - scaledWidth) / 2;
+        const offsetY = (displayHeight - scaledHeight) / 2;
 
         // Clear background
         ctx.fillStyle = "#0B0E14";
@@ -255,8 +248,8 @@ export default function HeroScroll() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E293B10_1px,transparent_1px),linear-gradient(to_bottom,#1E293B10_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
         {/* Top & Bottom Cinematic Edge Vignette */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-crew-bg via-crew-bg/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-72 sm:h-96 bg-gradient-to-t from-crew-bg via-crew-bg/85 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-64 sm:h-80 bg-gradient-to-t from-crew-bg via-crew-bg/75 to-transparent pointer-events-none" />
         <div className="absolute inset-0 bg-radial-vignette opacity-50 pointer-events-none" />
 
         {/* Preload Progress Indicator */}

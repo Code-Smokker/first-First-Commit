@@ -108,17 +108,18 @@ export default function Navbar() {
       <header
         ref={navRef}
         className={cn(
-          "fixed top-0 inset-x-0 z-[100] w-full transition-all duration-300 select-none",
+          "fixed top-0 inset-x-0 z-[100] w-full transition-all duration-300 select-none overflow-hidden",
           scrolled
-            ? "bg-black/90 backdrop-blur-2xl border-b border-white/[0.12] shadow-[0_12px_36px_rgba(0,0,0,0.9)] py-2.5"
-            : "bg-black/75 backdrop-blur-xl border-b border-white/[0.08] py-3.5"
+            ? "bg-black/60 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.18)] py-2.5"
+            : "bg-gradient-to-b from-black/45 via-black/20 to-transparent backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.22)] py-3.5"
         )}
       >
-        {/* Subtle Ambient Shimmer Line Across Bottom Border */}
-        <div className="absolute bottom-0 inset-x-0 h-[1px] overflow-hidden pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent via-sky-400/30 via-purple-400/25 to-transparent opacity-80" />
-          <div className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer" />
-        </div>
+        {/* Glossy Ambient Shimmer & Radiant Top Bevel */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.14),transparent_65%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent animate-shimmer pointer-events-none" />
+        
+        {/* Subtle Fading Light Sheen on Bottom Edge (No Hard Partition Line) */}
+        <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-sky-400/25 via-white/20 to-transparent pointer-events-none opacity-70" />
 
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Brand / Logo: Big Ultron Logo with glowing aura */}
