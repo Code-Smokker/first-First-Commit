@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, AnimatePresence } from "framer-motion";
 import {
-  Sparkles,
   ArrowRight,
   Terminal,
   Workflow,
@@ -17,26 +16,24 @@ import {
   Play,
   Check,
   Clock,
-  ChevronRight,
   ExternalLink,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ShinyButton from "@/components/ui/shiny-button";
 
 interface Stage {
   id: string;
   num: string;
   label: string;
   tag: string;
-  title: string;
+  heading: string;
   description: string;
   bullets: {
     title: string;
     desc: string;
-    icon: React.ComponentType<{ className?: string }>;
   }[];
-  badge: string;
-  badgeColor: string;
+  cta: string;
 }
 
 const STAGES: Stage[] = [
@@ -44,163 +41,139 @@ const STAGES: Stage[] = [
     id: "brief",
     num: "01",
     label: "BRIEF",
-    tag: "OUTCOME",
-    title: "START WITH THE OUTCOME.",
+    tag: "01 // OUTCOME CAPTURE",
+    heading: "START WITH THE OUTCOME.",
     description: "Give Ultron one outcome. The system turns intent into executable work.",
     bullets: [
       {
         title: "Intent Parsing",
         desc: "Natural language brief converted into formal AST objectives.",
-        icon: Terminal,
       },
       {
         title: "Budget Ceiling",
         desc: "Set a hard financial cap (e.g. $5.00 limit) with circuit breakers.",
-        icon: Lock,
       },
       {
         title: "Constraint Invariants",
-        desc: "Cedar permissions and stack boundaries locked before start.",
-        icon: ShieldCheck,
+        desc: "Non-negotiable safety and access rules locked before run.",
       },
     ],
-    badge: "STAGE 01 // OUTCOME CAPTURE",
-    badgeColor: "text-sky-400 bg-sky-950/60 border-sky-500/30",
+    cta: "Inspect Brief Protocol",
   },
   {
     id: "plan",
     num: "02",
     label: "PLAN",
-    tag: "PLANNING",
-    title: "TURN INTENT INTO A MISSION.",
-    description: "Ultron's Lead agent breaks the outcome into a structured plan.",
+    tag: "02 // MISSION PLANNING",
+    heading: "TURN INTENT INTO A MISSION.",
+    description: "Ultron converts the outcome into structured, verifiable work.",
     bullets: [
       {
-        title: "DAG Generation",
-        desc: "Constructs Directed Acyclic Graph of parallel and serial tasks.",
-        icon: Workflow,
+        title: "Mission DAG",
+        desc: "Directed acyclic graph with dependency ordering and contracts.",
       },
       {
-        title: "Context7 Indexing",
-        desc: "RAG retrieves repository schema and architectural patterns.",
-        icon: Layers,
+        title: "Task Breakdown",
+        desc: "Atomic tasks generated with unambiguous definitions of done.",
       },
       {
-        title: "Task Contracts",
-        desc: "Explicit definitions of done with deterministic criteria.",
-        icon: CheckCircle2,
+        title: "Parallel Scheduling",
+        desc: "Independent task streams dispatched simultaneously across the crew.",
       },
     ],
-    badge: "STAGE 02 // AST MISSION PLAN",
-    badgeColor: "text-purple-400 bg-purple-950/60 border-purple-500/30",
+    cta: "Explore DAG Generator",
   },
   {
     id: "delegate",
     num: "03",
     label: "DELEGATE",
-    tag: "DELEGATION",
-    title: "GIVE EVERY TASK TO THE RIGHT AGENT.",
-    description: "Specialized agents receive focused work with scoped credentials.",
+    tag: "03 // WORKFORCE ROUTING",
+    heading: "GIVE EVERY TASK TO THE RIGHT AGENT.",
+    description: "Specialized agents receive focused work matched to their role.",
     bullets: [
       {
-        title: "Role Specialization",
-        desc: "Lead delegates to Code, Design, RAG, QA, and Launch specialists.",
-        icon: Cpu,
+        title: "Role Matching",
+        desc: "Lead, Coder, Design, RAG, QA, and Launch agents receive assignments.",
       },
       {
-        title: "Scoped IAM Credentials",
-        desc: "Each agent runs with least-privilege tokens inside microVMs.",
-        icon: Lock,
+        title: "Context Injection",
+        desc: "Only the necessary files, schema, and tools provided to each sandbox.",
       },
       {
-        title: "Consensus Agreement",
-        desc: "Multi-agent alignment before filesystem mutations occur.",
-        icon: Sparkles,
+        title: "Boundary Enforcement",
+        desc: "Cedar policies bound to each individual agent identity.",
       },
     ],
-    badge: "STAGE 03 // MULTI-AGENT DISPATCH",
-    badgeColor: "text-amber-400 bg-amber-950/60 border-amber-500/30",
+    cta: "View Agent Roster",
   },
   {
     id: "execute",
     num: "04",
     label: "EXECUTE",
-    tag: "EXECUTION",
-    title: "LET THE CREW RUN THE MISSION.",
+    tag: "04 // AUTONOMOUS EXECUTION",
+    heading: "LET THE CREW RUN THE MISSION.",
     description: "Agents execute in parallel while you stay out of the way.",
     bullets: [
       {
-        title: "Parallel MicroVM Sandboxes",
-        desc: "Background container execution across AWS Fargate pods.",
-        icon: Zap,
+        title: "Parallel Execution",
+        desc: "Multi-agent swarm working inside isolated sandboxes.",
       },
       {
-        title: "Live PTY Telemetry",
-        desc: "Bi-directional terminal streaming with zero UI freeze.",
-        icon: Terminal,
+        title: "Live State Streaming",
+        desc: "Real-time terminal logs, file diffs, and status pulses.",
       },
       {
-        title: "Continuous State Sync",
-        desc: "Living office floor mirrors real-time pod activity and logs.",
-        icon: Workflow,
+        title: "Inter-Agent Sync",
+        desc: "Lead orchestrates blockers and hands off deliverables seamlessly.",
       },
     ],
-    badge: "STAGE 04 // AUTONOMOUS RUNTIME",
-    badgeColor: "text-cyan-400 bg-cyan-950/60 border-cyan-500/30",
+    cta: "Enter Live Office",
   },
   {
     id: "verify",
     num: "05",
     label: "VERIFY",
-    tag: "VERIFICATION",
-    title: "CHECK THE WORK BEFORE IT SHIPS.",
-    description: "Every important result passes through verification, testing, and human checkpoints.",
+    tag: "05 // VERIFICATION",
+    heading: "CHECK THE WORK BEFORE IT SHIPS.",
+    description: "Test, review, policy checks, and human checkpoints.",
     bullets: [
       {
-        title: "Automated Regressions",
-        desc: "Full test suite execution with cryptographic artifact hashing.",
-        icon: CheckCircle2,
+        title: "Automated Test Suites",
+        desc: "Headless unit, integration, and visual regression tests.",
       },
       {
-        title: "Cedar Policy Audit",
-        desc: "Deterministic verification against AWS Cedar policy invariants.",
-        icon: ShieldCheck,
+        title: "Cedar Policy Check",
+        desc: "Zero unauthorized network or database writes permitted.",
       },
       {
-        title: "Human Approval Gates",
-        desc: "Sensitive mutations pause for explicit staging confirmation.",
-        icon: Lock,
+        title: "Human Checkpoint",
+        desc: "Critical actions pause until approved by human operator.",
       },
     ],
-    badge: "STAGE 05 // POLICY VERIFICATION",
-    badgeColor: "text-emerald-400 bg-emerald-950/60 border-emerald-500/30",
+    cta: "Audit Verification Gates",
   },
   {
     id: "ship",
     num: "06",
     label: "SHIP",
-    tag: "DELIVERY",
-    title: "ONE VERIFIED OUTCOME.",
-    description: "The crew turns the original brief into a finished, production-ready result.",
+    tag: "06 // DELIVERY",
+    heading: "ONE VERIFIED OUTCOME.",
+    description: "The completed result is assembled and ready to ship.",
     bullets: [
       {
-        title: "Production Deployment",
+        title: "Production Deploy",
         desc: "Verified output deployed to AWS production infrastructure.",
-        icon: ArrowRight,
       },
       {
         title: "Budget Audit Cleared",
-        desc: "Total mission cost calculated within specified budget ceiling.",
-        icon: CheckCircle2,
+        desc: "Exact token and compute spend certified under the ceiling.",
       },
       {
-        title: "Complete Audit Trail",
-        desc: "Full transcript and changelog archived in OpenSearch ledger.",
-        icon: FileCode2,
+        title: "Audit Ledger Archived",
+        desc: "Complete cryptographic log stored in OpenSearch for compliance.",
       },
     ],
-    badge: "STAGE 06 // MISSION COMPLETE",
-    badgeColor: "text-rose-400 bg-rose-950/60 border-rose-500/30",
+    cta: "Start Your Mission",
   },
 ];
 
@@ -208,6 +181,7 @@ export default function MissionThread() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeStageIndex, setActiveStageIndex] = useState(0);
 
+  // Framer Motion scroll tracking
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -230,527 +204,545 @@ export default function MissionThread() {
     if (!containerRef.current) return;
     const containerTop = containerRef.current.offsetTop;
     const containerHeight = containerRef.current.offsetHeight;
-    const targetScroll = containerTop + (index / STAGES.length) * (containerHeight - window.innerHeight);
+    const targetScroll =
+      containerTop + (index / STAGES.length) * (containerHeight - window.innerHeight);
     window.scrollTo({ top: targetScroll, behavior: "smooth" });
   };
 
   const currentStage = STAGES[activeStageIndex];
+
+  // Orbital arc coordinates for the 6 nodes on the left
+  // Circle center is offscreen to the left: cx = -260, cy = 285, R = 500
+  // y spans from 60 to 510, x = cx + sqrt(R^2 - (y - cy)^2)
+  const NODE_COORDS = [
+    { x: 186, y: 60 },
+    { x: 220, y: 150 },
+    { x: 238, y: 240 },
+    { x: 238, y: 330 },
+    { x: 220, y: 420 },
+    { x: 186, y: 510 },
+  ];
+
+  const activeCoord = NODE_COORDS[activeStageIndex] || NODE_COORDS[0];
 
   return (
     <section
       id="mission-thread"
       ref={containerRef}
       className="relative w-full bg-[#080B10] text-white"
-      style={{ height: "450vh" }}
+      style={{ height: "550vh" }}
     >
-      {/* Pinned Viewport Container */}
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 sm:py-8">
-        {/* Section Header: Eyebrow + Main Title */}
-        <div className="mb-6 lg:mb-8 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 text-slate-300 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase mb-2">
+      {/* Sticky Cinematic Stage Viewport */}
+      <div className="sticky top-[var(--nav-height)] h-[calc(100vh-var(--nav-height))] w-full overflow-hidden flex flex-col justify-between pt-6 sm:pt-8 pb-4 sm:pb-6 select-none">
+        {/* Subtle Ambient Background Gradients */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[300px] bg-sky-500/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-cyan-500/5 blur-[120px] pointer-events-none" />
+
+        {/* ================================================== */}
+        {/* 1. FIXED SECTION HEADER (Top Center) */}
+        {/* ================================================== */}
+        <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-4xl mx-auto flex-shrink-0">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 text-slate-300 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase mb-2 shadow-[0_0_20px_rgba(56,189,248,0.15)]">
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
             <span>ULTRON // AUTONOMOUS WORKFLOW</span>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-            <h2 className="font-display font-black text-2xl sm:text-4xl md:text-5xl tracking-tight text-white leading-none">
-              THE MISSION THREAD
-            </h2>
-            <span className="font-mono text-xs sm:text-sm text-slate-400 tracking-wider uppercase">
-              FROM OUTCOME TO SHIPPED WORK.
-            </span>
-          </div>
+          <h2 className="font-display font-black text-2xl sm:text-4xl md:text-5xl tracking-tight text-white leading-tight">
+            FROM OUTCOME TO SHIPPED WORK.
+          </h2>
+
+          <p className="mt-1 text-slate-400 font-sans text-xs sm:text-sm tracking-wide">
+            One outcome becomes coordinated work, verified by the crew.
+          </p>
         </div>
 
-        {/* Mobile/Tablet Horizontal Progress Bar (< 1024px) */}
-        <div className="lg:hidden flex items-center justify-between overflow-x-auto gap-2 py-2 mb-6 border-b border-white/10 scrollbar-none">
-          {STAGES.map((stage, idx) => {
-            const isActive = activeStageIndex === idx;
-            const isCompleted = activeStageIndex > idx;
-            return (
-              <button
-                key={stage.id}
-                type="button"
-                onClick={() => handleStageClick(idx)}
-                className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-semibold whitespace-nowrap transition-colors border",
-                  isActive
-                    ? "bg-white/10 text-white border-sky-400/50 shadow-sm"
-                    : isCompleted
-                    ? "bg-transparent text-slate-400 border-white/10"
-                    : "bg-transparent text-slate-600 border-transparent hover:text-slate-400"
-                )}
-              >
-                <span
-                  className={cn(
-                    "w-2 h-2 rounded-full",
-                    isActive ? "bg-sky-400 animate-pulse" : isCompleted ? "bg-slate-400" : "bg-slate-700"
-                  )}
-                />
-                <span>{stage.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Desktop 3-Column Grid: Left Thread | Center Story | Right Product Demo */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[460px] lg:min-h-[520px]">
-          {/* ================================================== */}
-          {/* 1. LEFT SIDE: PERSISTENT MISSION THREAD TRACK (2.5 Cols) */}
-          {/* ================================================== */}
-          <div className="hidden lg:flex lg:col-span-3 flex-col relative pr-4">
-            <div className="relative pl-6 py-2">
-              {/* Vertical Background Line */}
-              <div className="absolute left-[11px] top-4 bottom-4 w-[2px] bg-white/10" />
-
-              {/* Vertical Animated Progress Line */}
-              <motion.div
-                className="absolute left-[11px] top-4 w-[2px] bg-gradient-to-b from-sky-400 via-crew-blue to-purple-400 origin-top"
-                style={{
-                  height: `${(activeStageIndex / (STAGES.length - 1)) * 88}%`,
-                  transition: "height 0.4s ease-out",
-                }}
+        {/* ================================================== */}
+        {/* 2. CINEMATIC 3-COLUMN MAIN STAGE */}
+        {/* Desktop: 22% Left | 42% Center | 36% Right */}
+        {/* ================================================== */}
+        <div className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center px-4 sm:px-8 max-w-[1700px] mx-auto w-full min-h-0 overflow-hidden">
+          {/* -------------------------------------------------- */}
+          {/* COLUMN 1: LEFT PARTIALLY CROPPED LIFECYCLE ARC (20-22%) */}
+          {/* -------------------------------------------------- */}
+          <div className="hidden lg:flex lg:col-span-3 h-full relative items-center justify-start overflow-visible pointer-events-auto">
+            {/* SVG Orbital Arc */}
+            <svg
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-[340px] h-[580px] overflow-visible pointer-events-none"
+              viewBox="0 0 340 580"
+              fill="none"
+            >
+              {/* Outer faint orbit glow */}
+              <path
+                d="M 186 60 A 500 500 0 0 1 186 510"
+                stroke="rgba(56, 189, 248, 0.12)"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+              {/* Main sharp orbit ring */}
+              <path
+                d="M 186 60 A 500 500 0 0 1 186 510"
+                stroke="rgba(255, 255, 255, 0.14)"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                strokeLinecap="round"
               />
 
-              {/* Stages List */}
-              <div className="space-y-7">
-                {STAGES.map((stage, idx) => {
-                  const isActive = activeStageIndex === idx;
-                  const isCompleted = activeStageIndex > idx;
-                  return (
-                    <button
-                      key={stage.id}
-                      type="button"
-                      onClick={() => handleStageClick(idx)}
-                      className="group flex items-start gap-4 text-left relative focus:outline-none transition-all cursor-pointer"
-                    >
-                      {/* Node Bullet */}
-                      <div className="relative flex items-center justify-center -ml-[23px] mt-0.5">
-                        {isActive && (
-                          <div className="absolute w-6 h-6 rounded-full bg-sky-400/20 border border-sky-400/40 animate-ping" />
-                        )}
-                        <div
-                          className={cn(
-                            "w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center",
-                            isActive
-                              ? "bg-[#080B10] border-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.7)]"
-                              : isCompleted
-                              ? "bg-slate-700 border-slate-500"
-                              : "bg-[#080B10] border-slate-800 group-hover:border-slate-600"
-                          )}
-                        >
-                          {isActive && <div className="w-1.5 h-1.5 rounded-full bg-sky-400" />}
-                          {isCompleted && <div className="w-1 h-1 rounded-full bg-slate-300" />}
-                        </div>
-                      </div>
+              {/* Active Connector Beam to Center Content */}
+              <line
+                x1={activeCoord.x + 14}
+                y1={activeCoord.y}
+                x2="340"
+                y2={activeCoord.y}
+                stroke="rgba(56, 189, 248, 0.6)"
+                strokeWidth="1.5"
+                strokeDasharray="3 3"
+                className="transition-all duration-300 ease-out"
+              />
+            </svg>
 
-                      {/* Stage Label & Micro-Detail Tag */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "font-mono text-xs font-bold tracking-widest transition-colors",
-                              isActive
-                                ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
-                                : isCompleted
-                                ? "text-slate-300"
-                                : "text-slate-600 group-hover:text-slate-400"
-                            )}
-                          >
-                            {stage.num} // {stage.label}
+            {/* Stage Nodes & Labels along the Arc */}
+            <div className="relative w-full h-[580px]">
+              {STAGES.map((stage, idx) => {
+                const coord = NODE_COORDS[idx];
+                const isActive = activeStageIndex === idx;
+                const isCompleted = activeStageIndex > idx;
+
+                return (
+                  <div
+                    key={stage.id}
+                    onClick={() => handleStageClick(idx)}
+                    style={{
+                      position: "absolute",
+                      left: `${coord.x}px`,
+                      top: `${coord.y}px`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                    className="flex items-center gap-3 cursor-pointer group select-none z-20"
+                  >
+                    {/* Node Dot / Badge */}
+                    <div className="relative flex items-center justify-center">
+                      {isActive && (
+                        <span className="absolute -inset-2 rounded-full bg-sky-400/20 blur-sm animate-pulse pointer-events-none" />
+                      )}
+
+                      <div
+                        className={cn(
+                          "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300",
+                          isActive
+                            ? "bg-[#080B10] border-2 border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.8)] scale-110"
+                            : isCompleted
+                            ? "bg-[#080B10] border border-sky-500/40 text-sky-400/60"
+                            : "bg-[#080B10] border border-white/15 text-slate-500 group-hover:border-white/30"
+                        )}
+                      >
+                        {isActive ? (
+                          <div className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping" />
+                        ) : isCompleted ? (
+                          <Check className="w-3.5 h-3.5 text-sky-400/80" />
+                        ) : (
+                          <span className="text-[10px] font-mono text-slate-500 font-semibold">
+                            {stage.num}
                           </span>
-                        </div>
-                        <span
-                          className={cn(
-                            "font-mono text-[9px] tracking-wider uppercase transition-colors",
-                            isActive
-                              ? "text-sky-400 font-semibold"
-                              : isCompleted
-                              ? "text-slate-500"
-                              : "text-slate-700"
-                          )}
-                        >
-                          {stage.tag}
-                        </span>
+                        )}
                       </div>
-                    </button>
-                  );
-                })}
-              </div>
+                    </div>
+
+                    {/* Small Technical Label */}
+                    <span
+                      className={cn(
+                        "font-mono text-xs tracking-widest uppercase transition-all duration-200",
+                        isActive
+                          ? "text-sky-300 font-bold drop-shadow-[0_0_10px_rgba(56,189,248,0.5)] translate-x-0.5"
+                          : isCompleted
+                          ? "text-slate-400 font-medium group-hover:text-slate-200"
+                          : "text-slate-500 group-hover:text-slate-300"
+                      )}
+                    >
+                      {stage.label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* ================================================== */}
-          {/* 2. CENTER: ACTIVE STAGE STORY & BULLETS (4 Cols) */}
-          {/* ================================================== */}
-          <div className="lg:col-span-4 flex flex-col justify-center min-h-[300px]">
+          {/* -------------------------------------------------- */}
+          {/* COLUMN 2: CENTER ACTIVE CONTENT (42%) */}
+          {/* max-width ~520px, clean typography, generous negative space */}
+          {/* -------------------------------------------------- */}
+          <div className="col-span-1 lg:col-span-5 flex flex-col justify-center px-2 sm:px-6 z-20 max-w-[540px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStage.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex flex-col"
+              >
+                {/* Stage Tag */}
+                <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest text-sky-400 uppercase mb-3">
+                  <span className="w-2 h-[1px] bg-sky-400" />
+                  <span>{currentStage.tag}</span>
+                </div>
+
+                {/* Stage Main Heading */}
+                <h3 className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight leading-tight mb-3">
+                  {currentStage.heading}
+                </h3>
+
+                {/* Stage Description */}
+                <p className="text-slate-300 font-sans text-sm sm:text-base leading-relaxed mb-6">
+                  {currentStage.description}
+                </p>
+
+                {/* Stage Bullets */}
+                <div className="space-y-3 mb-8">
+                  {currentStage.bullets.map((bullet, idx) => (
+                    <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm">
+                      <span className="text-sky-400 font-bold mt-0.5">•</span>
+                      <p className="text-slate-300 leading-relaxed font-sans">
+                        <strong className="text-white font-semibold">
+                          {bullet.title}:
+                        </strong>{" "}
+                        {bullet.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Restrained CTA Button (Styled like reference "Engine ↗") */}
+                <div className="flex items-center gap-4">
+                  <a
+                    href="#zones"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 hover:border-sky-400/50 text-white font-mono text-xs tracking-wider transition-all duration-200 group shadow-md"
+                  >
+                    <span>{currentStage.cta}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-sky-400 group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+
+                  {/* Stage Index indicator */}
+                  <span className="text-xs font-mono text-slate-500">
+                    STAGE {currentStage.num} / 06
+                  </span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* -------------------------------------------------- */}
+          {/* COLUMN 3: RIGHT LARGE PRODUCT VISUAL (36-38%) */}
+          {/* Partially cropped on the right edge, cinematic technical panel */}
+          {/* -------------------------------------------------- */}
+          <div className="col-span-1 lg:col-span-4 h-[380px] sm:h-[440px] lg:h-[480px] relative flex items-center justify-start lg:-mr-16 overflow-visible">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStage.id}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
-                className="space-y-4"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="w-full lg:w-[125%] h-full rounded-2xl bg-[#0F141C]/95 border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-2xl flex flex-col overflow-hidden group"
               >
-                {/* Stage Pill */}
-                <div
-                  className={cn(
-                    "inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-mono tracking-wider uppercase",
-                    currentStage.badgeColor
-                  )}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                  <span>{currentStage.badge}</span>
+                {/* Product Panel Top Window Bar */}
+                <div className="h-10 px-4 bg-[#0A0D14] border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                    <span className="ml-2 font-mono text-[11px] text-slate-400">
+                      ultron // {currentStage.id}.runtime
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-slate-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-emerald-400 font-semibold">ACTIVE</span>
+                  </div>
                 </div>
 
-                {/* Stage Title */}
-                <h3 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight leading-snug">
-                  {currentStage.title}
-                </h3>
-
-                {/* Stage Description */}
-                <p className="text-slate-300 font-sans text-xs sm:text-sm leading-relaxed">
-                  {currentStage.description}
-                </p>
-
-                {/* Feature Bullets */}
-                <div className="space-y-2.5 pt-2">
-                  {currentStage.bullets.map((bullet) => {
-                    const Icon = bullet.icon;
-                    return (
-                      <div
-                        key={bullet.title}
-                        className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3 hover:border-white/15 transition-colors"
-                      >
-                        <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <Icon className="w-3.5 h-3.5 text-sky-400" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-mono text-xs font-bold text-white tracking-wide">
-                            {bullet.title}
-                          </h4>
-                          <p className="text-[11px] text-slate-400 font-sans leading-normal mt-0.5">
-                            {bullet.desc}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+                {/* Product Panel Body: Dynamic Per-Stage UI */}
+                <div className="p-4 sm:p-5 flex-1 flex flex-col overflow-y-auto font-mono text-xs scrollbar-none">
+                  {activeStageIndex === 0 && <StageVisualBrief />}
+                  {activeStageIndex === 1 && <StageVisualPlan />}
+                  {activeStageIndex === 2 && <StageVisualDelegate />}
+                  {activeStageIndex === 3 && <StageVisualExecute />}
+                  {activeStageIndex === 4 && <StageVisualVerify />}
+                  {activeStageIndex === 5 && <StageVisualShip />}
                 </div>
 
-                {/* Stage 06 Direct CTA */}
-                {currentStage.id === "ship" && (
-                  <div className="pt-2">
-                    <ShinyButton
-                      label="START BUILDING →"
-                      onClick={() => (window.location.href = "/start")}
-                      fillColor="#07090E"
-                      labelColor="#FFFFFF"
-                      accentColor="#38BDF8"
-                      accentSoftColor="#818CF8"
-                      cornerRadius={10}
-                      className="w-full !py-2.5 !text-xs !font-mono !font-bold !tracking-wider !text-white !border-sky-400/50 hover:!border-sky-400 shadow-[0_0_22px_rgba(56,189,248,0.35)]"
-                    />
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* ================================================== */}
-          {/* 3. RIGHT SIDE: LARGE PRODUCT VISUAL PANEL (5 Cols) */}
-          {/* ================================================== */}
-          <div className="lg:col-span-5 w-full flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStage.id}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
-                className="w-full rounded-2xl bg-[#0B0F17] border border-white/15 p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.85)] relative overflow-hidden"
-              >
-                {/* Visual Glass Sheen Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/[0.04] via-transparent to-purple-500/[0.04] pointer-events-none" />
-
-                {/* STAGE 01 // BRIEF: Command Interface */}
-                {currentStage.id === "brief" && (
-                  <div className="space-y-4 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <Terminal className="w-4 h-4 text-sky-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          ULTRON COMMAND INTERFACE
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                        ONLINE
-                      </span>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-black/60 border border-white/10 space-y-3">
-                      <span className="text-[10px] text-slate-500 uppercase tracking-widest block">
-                        Mission Prompt Input
-                      </span>
-                      <div className="flex items-center gap-2 text-sky-300 text-xs sm:text-sm font-semibold">
-                        <span className="text-slate-500">$</span>
-                        <span>&ldquo;Build a landing page for my startup.&rdquo;</span>
-                        <span className="w-2 h-4 bg-sky-400 animate-pulse" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-[11px]">
-                      <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10">
-                        <span className="text-slate-500 block text-[10px]">FINANCIAL CEILING</span>
-                        <span className="text-amber-300 font-bold">$5.00 Limit</span>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10">
-                        <span className="text-slate-500 block text-[10px]">EXECUTION MODE</span>
-                        <span className="text-emerald-400 font-bold">Autonomous DAG</span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-lg bg-sky-500/10 border border-sky-500/30 text-[11px] text-sky-300 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-sky-400" />
-                      <span>Outcome received • Routing to Lead Agent AST planner...</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 02 // PLAN: Mission Plan AST DAG */}
-                {currentStage.id === "plan" && (
-                  <div className="space-y-3.5 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <Workflow className="w-4 h-4 text-purple-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          MISSION PLAN // AST DAG
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-purple-400 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
-                        6 CONTRACTS
-                      </span>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-black/60 border border-white/10 space-y-2 text-[11px] leading-relaxed">
-                      <div className="text-sky-300 font-bold">Mission // SaaS Landing Page</div>
-                      <div className="pl-3 space-y-1.5 text-slate-300">
-                        <div className="flex items-center justify-between">
-                          <span>├── 01 // Research & RAG Indexing</span>
-                          <span className="text-[10px] text-emerald-400 font-semibold">Done</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>├── 02 // Design Tokens & Palette</span>
-                          <span className="text-[10px] text-sky-400 font-semibold">Active</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>├── 03 // Next.js Component Tree</span>
-                          <span className="text-[10px] text-purple-400 font-semibold">Queued</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>├── 04 // Cedar Authorization Audit</span>
-                          <span className="text-[10px] text-amber-400 font-semibold">Gated</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>└── 05 // Production Deploy Pipeline</span>
-                          <span className="text-[10px] text-slate-500 font-semibold">Pending</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400">Dependency Graph Status:</span>
-                      <span className="text-emerald-400 font-bold">Zero Cyclic Blocks</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 03 // DELEGATE: 6 Ultron Agents Grid */}
-                {currentStage.id === "delegate" && (
-                  <div className="space-y-3 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <Cpu className="w-4 h-4 text-amber-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          SPECIALIST WORKFORCE
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
-                        DISPATCHED
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-left">
-                      {[
-                        { name: "Lead Agent", role: "Mission DAG", model: "Claude 3.7", color: "text-sky-400" },
-                        { name: "Code Agent", role: "Full-stack code", model: "Sonnet 3.5", color: "text-purple-400" },
-                        { name: "Design Agent", role: "UI & Tokens", model: "Figma API", color: "text-rose-400" },
-                        { name: "RAG Agent", role: "Knowledge", model: "OpenSearch", color: "text-blue-400" },
-                        { name: "QA Agent", role: "Cedar Audit", model: "Cedar Engine", color: "text-emerald-400" },
-                        { name: "Launch Agent", role: "Changelog", model: "ECS Fargate", color: "text-amber-400" },
-                      ].map((ag) => (
-                        <div
-                          key={ag.name}
-                          className="p-2.5 rounded-lg bg-black/50 border border-white/10 hover:border-white/20 transition-colors"
-                        >
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className={cn("text-xs font-bold", ag.color)}>{ag.name}</span>
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          </div>
-                          <p className="text-[10px] text-slate-400 font-sans">{ag.role}</p>
-                          <span className="text-[9px] text-slate-500 block mt-1">{ag.model}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 04 // EXECUTE: Live Runtime & PTY Streaming */}
-                {currentStage.id === "execute" && (
-                  <div className="space-y-3 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <Terminal className="w-4 h-4 text-cyan-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          LIVE PTY STREAM (PID 4892)
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                        <span>RUNNING</span>
-                      </span>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-black/80 border border-white/10 font-mono text-[11px] space-y-1.5 text-slate-300">
-                      <div className="text-slate-500">// microVM Container: fargate-node-us-east-1</div>
-                      <div className="text-emerald-400">[12:44:18] SYSTEM AstDag: 4 parallel tasks running</div>
-                      <div className="text-sky-300">[12:44:21] COMMAND cd /workspace && git status</div>
-                      <div className="text-slate-400">[12:44:23] OUTPUT M src/components/Hero.tsx</div>
-                      <div className="text-purple-300">[12:44:30] TOOL cedar.validate_schema --strict (0ms)</div>
-                      <div className="text-amber-300 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                        <span>[12:44:35] INTERACTION REQUIRED: Staging confirmation</span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-[10px] text-center">
-                      <div className="p-2 rounded bg-white/[0.02] border border-white/10">
-                        <span className="text-slate-500 block">ACTIVE PODS</span>
-                        <span className="text-white font-bold">6 MicroVMs</span>
-                      </div>
-                      <div className="p-2 rounded bg-white/[0.02] border border-white/10">
-                        <span className="text-slate-500 block">BUDGET SPENT</span>
-                        <span className="text-sky-400 font-bold">$1.84 / $5.00</span>
-                      </div>
-                      <div className="p-2 rounded bg-white/[0.02] border border-white/10">
-                        <span className="text-slate-500 block">LATENCY</span>
-                        <span className="text-emerald-400 font-bold">24ms PTY</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 05 // VERIFY: Verification Pipeline */}
-                {currentStage.id === "verify" && (
-                  <div className="space-y-3 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          VERIFICATION AUDIT
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                        PASSED
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 text-[11px]">
-                      {[
-                        { label: "Unit & Integration Tests", result: "42/42 Tests Passed", status: "ok" },
-                        { label: "Cedar Authorization Check", result: "POL-CEDAR-09 Validated", status: "ok" },
-                        { label: "AST Mutation Invariants", result: "No Scope Overflows", status: "ok" },
-                        { label: "Human Staging Approval", result: "Signed Off by User", status: "ok" },
-                      ].map((item) => (
-                        <div
-                          key={item.label}
-                          className="p-2.5 rounded-lg bg-black/60 border border-white/10 flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Check className="w-3.5 h-3.5 text-emerald-400" />
-                            <span className="text-slate-300">{item.label}</span>
-                          </div>
-                          <span className="text-[10px] text-emerald-400 font-bold font-mono">
-                            {item.result}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-300">
-                      All security gates cleared • Ready for production branch merge
-                    </div>
-                  </div>
-                )}
-
-                {/* STAGE 06 // SHIP: Final Outcome Delivery */}
-                {currentStage.id === "ship" && (
-                  <div className="space-y-3 font-mono select-text">
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-rose-400" />
-                        <span className="text-xs font-bold text-white tracking-wider">
-                          MISSION COMPLETE
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                        SHIPPED
-                      </span>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-black/60 border border-white/10 space-y-2 text-[11px]">
-                      <div className="flex items-center justify-between text-slate-300">
-                        <span>Status:</span>
-                        <span className="text-emerald-400 font-bold">100% Complete</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-300">
-                        <span>Total Mission Cost:</span>
-                        <span className="text-sky-400 font-bold">$2.31 / $5.00 limit</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-300">
-                        <span>Time to Deliver:</span>
-                        <span className="text-white font-bold">4m 12s autonomous</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-300">
-                        <span>Deployment URL:</span>
-                        <span className="text-sky-300 font-bold flex items-center gap-1">
-                          <span>production.ultron.app</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-sky-500/10 via-purple-500/10 to-rose-500/10 border border-white/15 text-center">
-                      <p className="text-xs font-sans text-slate-300 mb-2">
-                        One brief became a coordinated AI team.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => (window.location.href = "/start")}
-                        className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-[#080B10] font-mono text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5 mx-auto"
-                      >
-                        <span>Start Building With Ultron</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Subtle Right Edge Fade to enhance the partially-cropped feeling */}
+                <div className="hidden lg:block absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#080B10] to-transparent pointer-events-none" />
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
+
+        {/* ================================================== */}
+        {/* 3. BOTTOM MOBILE STEPPER (< 1024px) */}
+        {/* ================================================== */}
+        <div className="lg:hidden flex items-center justify-center gap-2 px-4 py-2 border-t border-white/10 flex-shrink-0">
+          {STAGES.map((st, i) => (
+            <button
+              key={st.id}
+              onClick={() => handleStageClick(i)}
+              className={cn(
+                "px-2.5 py-1 rounded-md text-[10px] font-mono transition-all",
+                activeStageIndex === i
+                  ? "bg-sky-400/20 text-sky-300 border border-sky-400/40 font-bold"
+                  : "text-slate-500 hover:text-slate-300"
+              )}
+            >
+              {st.label}
+            </button>
+          ))}
+        </div>
       </div>
     </section>
+  );
+}
+
+{/* ========================================================================= */}
+{/* STAGE VISUALS (Rich, Technical, Product-Grade UI Panels) */}
+{/* ========================================================================= */}
+
+function StageVisualBrief() {
+  return (
+    <div className="flex flex-col h-full justify-between space-y-4">
+      <div>
+        <div className="text-slate-400 text-[11px] mb-1">// MISSION INPUT PROMPT</div>
+        <div className="p-3 rounded-xl bg-black/50 border border-white/10 text-white font-sans text-xs sm:text-sm leading-relaxed">
+          &gt; &quot;Build a high-performance landing page for Ultron with 6 autonomous agents,
+          interactive DAG, live pixel office, and Cedar permission guardrails.&quot;
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+          <span className="text-[10px] text-slate-400">BUDGET CEILING</span>
+          <div className="text-lg font-bold text-white mt-0.5">$5.00 USD</div>
+          <span className="text-[9px] text-emerald-400">Hard circuit breaker</span>
+        </div>
+
+        <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+          <span className="text-[10px] text-slate-400">EXECUTION MODE</span>
+          <div className="text-lg font-bold text-sky-400 mt-0.5">AUTONOMOUS</div>
+          <span className="text-[9px] text-slate-400">6 Agent Crew</span>
+        </div>
+      </div>
+
+      <div className="p-2.5 rounded-xl bg-sky-950/40 border border-sky-500/30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-sky-400" />
+          <span className="text-[11px] text-sky-200">Outcome Captured // 3 Invariants Locked</span>
+        </div>
+        <span className="text-[10px] text-sky-400 font-bold font-mono">READY</span>
+      </div>
+    </div>
+  );
+}
+
+function StageVisualPlan() {
+  return (
+    <div className="flex flex-col h-full justify-between space-y-3">
+      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+        <span>DAG TOPOLOGICAL GRAPH</span>
+        <span className="text-purple-400">6 NODES • 0 CYCLES</span>
+      </div>
+
+      <div className="space-y-2 py-1">
+        <div className="p-2.5 rounded-lg bg-black/40 border border-purple-500/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+            <span className="text-white text-xs font-semibold">01. Parse Brief AST</span>
+          </div>
+          <span className="text-[10px] text-emerald-400">COMPLETED</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 pl-4 border-l border-purple-500/30">
+          <div className="p-2 rounded-lg bg-purple-950/30 border border-purple-500/20 text-[11px]">
+            <span className="text-purple-300 font-bold">02A. UI Tokens</span>
+            <div className="text-[10px] text-slate-400">Parallel Stream 1</div>
+          </div>
+          <div className="p-2 rounded-lg bg-purple-950/30 border border-purple-500/20 text-[11px]">
+            <span className="text-purple-300 font-bold">02B. Cedar Auth</span>
+            <div className="text-[10px] text-slate-400">Parallel Stream 2</div>
+          </div>
+        </div>
+
+        <div className="p-2.5 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
+            <span className="text-slate-200 text-xs">03. Integration &amp; Build Test</span>
+          </div>
+          <span className="text-[10px] text-sky-400">QUEUED</span>
+        </div>
+      </div>
+
+      <div className="p-2 rounded-lg bg-white/[0.02] border border-white/10 text-[10px] text-slate-400 flex justify-between">
+        <span>Deterministic Task Contracts</span>
+        <span className="text-slate-200">100% SPECIFIED</span>
+      </div>
+    </div>
+  );
+}
+
+function StageVisualDelegate() {
+  const agents = [
+    { role: "LEAD", model: "qwen3-coder-plus", tasks: "4 Tasks", color: "text-amber-400 border-amber-500/30" },
+    { role: "CODER", model: "deepseek-v3", tasks: "8 Tasks", color: "text-sky-400 border-sky-500/30" },
+    { role: "DESIGN", model: "claude-3-5-sonnet", tasks: "3 Tasks", color: "text-rose-400 border-rose-500/30" },
+    { role: "RAG", model: "gemini-2.0-flash", tasks: "5 Tasks", color: "text-cyan-400 border-cyan-500/30" },
+    { role: "QA", model: "gpt-4o-mini", tasks: "6 Tasks", color: "text-purple-400 border-purple-500/30" },
+    { role: "LAUNCH", model: "claude-3-5-haiku", tasks: "2 Tasks", color: "text-emerald-400 border-emerald-500/30" },
+  ];
+
+  return (
+    <div className="flex flex-col h-full justify-between space-y-2">
+      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+        <span>WORKFORCE IDENTITY MATRIX</span>
+        <span className="text-sky-400">6/6 ROLES ALLOCATED</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {agents.map((ag) => (
+          <div key={ag.role} className={cn("p-2 rounded-lg bg-black/40 border", ag.color)}>
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-[11px]">{ag.role}</span>
+              <span className="text-[9px] text-slate-400">{ag.tasks}</span>
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5 truncate">{ag.model}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-2 rounded-lg bg-black/50 border border-white/10 text-[10px] flex items-center justify-between">
+        <span className="text-slate-400">Cedar Policy Boundary:</span>
+        <span className="text-emerald-400 font-bold">ISOLATED_SANDBOX</span>
+      </div>
+    </div>
+  );
+}
+
+function StageVisualExecute() {
+  return (
+    <div className="flex flex-col h-full justify-between space-y-2">
+      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+        <span>LIVE TELEMETRY STREAM</span>
+        <span className="text-emerald-400 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+          RUNNING
+        </span>
+      </div>
+
+      <div className="space-y-1.5 p-3 rounded-xl bg-black/60 border border-white/10 font-mono text-[11px] text-slate-300">
+        <div className="text-slate-500">&gt; [CODER] git checkout -b feature/auth-plane</div>
+        <div className="text-sky-400">&gt; [CODER] compiled src/auth/cedar.ts in 240ms</div>
+        <div className="text-rose-400">&gt; [DESIGN] synced tokens with living-office palette</div>
+        <div className="text-amber-400">&gt; [LEAD] gate #2 cleared — unblocking QA stream</div>
+        <div className="text-purple-400">&gt; [QA] spinning up test suites on port 3001</div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="p-2 rounded-lg bg-white/[0.03] border border-white/10">
+          <span className="text-[9px] text-slate-400">TOKENS</span>
+          <div className="text-xs font-bold text-white mt-0.5">142,890</div>
+        </div>
+        <div className="p-2 rounded-lg bg-white/[0.03] border border-white/10">
+          <span className="text-[9px] text-slate-400">SPEND</span>
+          <div className="text-xs font-bold text-emerald-400 mt-0.5">$1.14 / $5.00</div>
+        </div>
+        <div className="p-2 rounded-lg bg-white/[0.03] border border-white/10">
+          <span className="text-[9px] text-slate-400">THROUGHPUT</span>
+          <div className="text-xs font-bold text-sky-400 mt-0.5">38 ops/sec</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StageVisualVerify() {
+  return (
+    <div className="flex flex-col h-full justify-between space-y-3">
+      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+        <span>VERIFICATION DASHBOARD</span>
+        <span className="text-emerald-400">ALL GATES ACTIVE</span>
+      </div>
+
+      <div className="space-y-2">
+        <div className="p-2.5 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span className="text-white text-xs">42/42 Headless Tests Passed</span>
+          </div>
+          <span className="text-[10px] text-emerald-400 font-bold">100%</span>
+        </div>
+
+        <div className="p-2.5 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span className="text-white text-xs">Cedar Permissions: 0 Unauthorized</span>
+          </div>
+          <span className="text-[10px] text-emerald-400 font-bold">SECURE</span>
+        </div>
+
+        <div className="p-2.5 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-sky-400" />
+            <span className="text-white text-xs">Budget Guard: $2.31 / $5.00 Used</span>
+          </div>
+          <span className="text-[10px] text-sky-400 font-bold">PASS</span>
+        </div>
+      </div>
+
+      <div className="p-2.5 rounded-xl bg-amber-950/30 border border-amber-500/40 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+          <span className="text-[11px] text-amber-200">Human Checkpoint Gate</span>
+        </div>
+        <span className="text-[10px] text-amber-300 font-bold">APPROVED BY OPERATOR</span>
+      </div>
+    </div>
+  );
+}
+
+function StageVisualShip() {
+  return (
+    <div className="flex flex-col h-full justify-between space-y-3">
+      <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+        <span>PRODUCTION RELEASE MANIFEST</span>
+        <span className="text-emerald-400 font-bold">READY TO SHIP</span>
+      </div>
+
+      <div className="space-y-2">
+        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/30">
+          <div className="text-[10px] text-slate-400">TARGET DEPLOYMENT</div>
+          <div className="text-sm font-bold text-white mt-0.5">AWS ECS Fargate + CloudFront CDN</div>
+          <div className="text-[10px] text-slate-500 font-mono mt-1">Commit: 0x9e4f21a (Signed &amp; Verified)</div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/10">
+            <span className="text-[9px] text-slate-400">FINAL SPEND</span>
+            <div className="text-base font-bold text-emerald-400 mt-0.5">$2.31</div>
+            <span className="text-[9px] text-slate-400">$2.69 under cap</span>
+          </div>
+
+          <div className="p-2.5 rounded-lg bg-white/[0.03] border border-white/10">
+            <span className="text-[9px] text-slate-400">AUDIT LEDGER</span>
+            <div className="text-base font-bold text-sky-400 mt-0.5">ARCHIVED</div>
+            <span className="text-[9px] text-slate-400">OpenSearch verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span className="text-[11px] text-emerald-200">Outcome Verified &amp; Shipped</span>
+        </div>
+        <span className="text-[10px] text-emerald-400 font-bold font-mono">DONE</span>
+      </div>
+    </div>
   );
 }
