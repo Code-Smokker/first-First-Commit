@@ -30,7 +30,7 @@ const AGENTS: AgentProfile[] = [
     id: "lead",
     name: "Lead",
     codename: "LEAD // 01",
-    role: "Plans the mission and coordinates the crew.",
+    role: "Plans the mission and coordinates the Ultron team.",
     outfitBadge: "3-Piece Charcoal Suit • Maroon Tie • Gold Chain",
     accent: "blue",
     imageFallback: "/sequence-1/frame-001.jpg",
@@ -38,7 +38,7 @@ const AGENTS: AgentProfile[] = [
     tools: ["DAG Compiler", "Task Decomposer", "Consensus Engine"],
     cedarScope: "Full Workspace Delegation & Policy Enforcement",
     description:
-      "Plans the mission and coordinates the crew. Give Ultron an outcome, and the Lead Agent breaks it into work, assigns the right specialist, tracks progress and coordinates the team.",
+      "Plans the mission and coordinates the autonomous agents. Give Ultron an outcome, and the Lead Agent breaks it into work, assigns the right specialist, tracks progress and coordinates the team.",
     stats: {
       contractsCompleted: 1420,
       accuracy: "99.8%",

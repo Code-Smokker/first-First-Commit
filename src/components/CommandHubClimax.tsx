@@ -242,7 +242,7 @@ export default function CommandHubClimax() {
                   className="w-full sm:w-auto px-5 py-3 rounded-xl bg-crew-bg/80 hover:bg-crew-bg border border-crew-border hover:border-slate-400 text-slate-200 font-mono text-xs tracking-wider transition-all flex items-center justify-center gap-2"
                 >
                   <Terminal className="w-3.5 h-3.5 text-crew-blue" />
-                  <span>INSPECT CREW ROSTER</span>
+                  <span>INSPECT ULTRON ROSTER</span>
                 </a>
               </div>
 

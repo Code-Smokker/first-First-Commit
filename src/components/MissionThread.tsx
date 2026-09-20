@@ -40,7 +40,7 @@ const STAGES: Stage[] = [
   {
     id: "brief",
     num: "01",
-    label: "BRIEF",
+    label: "Brief",
     tag: "01 // OUTCOME CAPTURE",
     heading: "START WITH THE OUTCOME.",
     description: "Give Ultron one outcome. The system turns intent into executable work.",
@@ -63,7 +63,7 @@ const STAGES: Stage[] = [
   {
     id: "plan",
     num: "02",
-    label: "PLAN",
+    label: "Plan",
     tag: "02 // MISSION PLANNING",
     heading: "TURN INTENT INTO A MISSION.",
     description: "Ultron converts the outcome into structured, verifiable work.",
@@ -78,7 +78,7 @@ const STAGES: Stage[] = [
       },
       {
         title: "Parallel Scheduling",
-        desc: "Independent task streams dispatched simultaneously across the crew.",
+        desc: "Independent task streams dispatched simultaneously across Ultron agents.",
       },
     ],
     cta: "Explore DAG Generator",
@@ -86,7 +86,7 @@ const STAGES: Stage[] = [
   {
     id: "delegate",
     num: "03",
-    label: "DELEGATE",
+    label: "Delegate",
     tag: "03 // WORKFORCE ROUTING",
     heading: "GIVE EVERY TASK TO THE RIGHT AGENT.",
     description: "Specialized agents receive focused work matched to their role.",
@@ -109,9 +109,9 @@ const STAGES: Stage[] = [
   {
     id: "execute",
     num: "04",
-    label: "EXECUTE",
+    label: "Execute",
     tag: "04 // AUTONOMOUS EXECUTION",
-    heading: "LET THE CREW RUN THE MISSION.",
+    heading: "LET ULTRON RUN THE MISSION.",
     description: "Agents execute in parallel while you stay out of the way.",
     bullets: [
       {
@@ -132,7 +132,7 @@ const STAGES: Stage[] = [
   {
     id: "verify",
     num: "05",
-    label: "VERIFY",
+    label: "Verify",
     tag: "05 // VERIFICATION",
     heading: "CHECK THE WORK BEFORE IT SHIPS.",
     description: "Test, review, policy checks, and human checkpoints.",
@@ -155,7 +155,7 @@ const STAGES: Stage[] = [
   {
     id: "ship",
     num: "06",
-    label: "SHIP",
+    label: "Ship",
     tag: "06 // DELIVERY",
     heading: "ONE VERIFIED OUTCOME.",
     description: "The completed result is assembled and ready to ship.",
@@ -211,16 +211,15 @@ export default function MissionThread() {
 
   const currentStage = STAGES[activeStageIndex];
 
-  // Orbital arc coordinates for the 6 nodes on the left
-  // Circle center is offscreen to the left: cx = -260, cy = 285, R = 500
-  // y spans from 60 to 510, x = cx + sqrt(R^2 - (y - cy)^2)
+  // Orbital arc coordinates for the 6 nodes on the outer ring:
+  // R1 = 440, cx = -200, cy = 290
   const NODE_COORDS = [
-    { x: 186, y: 60 },
-    { x: 220, y: 150 },
-    { x: 238, y: 240 },
-    { x: 238, y: 330 },
-    { x: 220, y: 420 },
-    { x: 186, y: 510 },
+    { x: 178, y: 65 },
+    { x: 219, y: 155 },
+    { x: 238, y: 245 },
+    { x: 238, y: 335 },
+    { x: 219, y: 425 },
+    { x: 178, y: 515 },
   ];
 
   const activeCoord = NODE_COORDS[activeStageIndex] || NODE_COORDS[0];
@@ -252,7 +251,7 @@ export default function MissionThread() {
           </h2>
 
           <p className="mt-1 text-slate-400 font-sans text-xs sm:text-sm tracking-wide">
-            One outcome becomes coordinated work, verified by the crew.
+            One outcome becomes coordinated work, verified by Ultron.
           </p>
         </div>
 
@@ -262,50 +261,71 @@ export default function MissionThread() {
         {/* ================================================== */}
         <div className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center px-4 sm:px-8 max-w-[1700px] mx-auto w-full min-h-0 overflow-hidden">
           {/* -------------------------------------------------- */}
-          {/* COLUMN 1: LEFT PARTIALLY CROPPED LIFECYCLE ARC (20-22%) */}
+          {/* COLUMN 1: LEFT DOUBLE CONCENTRIC RING TRACK (20-22%) */}
           {/* -------------------------------------------------- */}
           <div className="hidden lg:flex lg:col-span-3 h-full relative items-center justify-start overflow-visible pointer-events-auto">
-            {/* SVG Orbital Arc */}
+            {/* SVG Double Concentric Rings & Solid Connector Line */}
             <svg
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-[340px] h-[580px] overflow-visible pointer-events-none"
-              viewBox="0 0 340 580"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-[380px] h-[580px] overflow-visible pointer-events-none"
+              viewBox="0 0 380 580"
               fill="none"
             >
-              {/* Outer faint orbit glow */}
+              <defs>
+                {/* Connector Solid Glow Gradient */}
+                <linearGradient id="connectorGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.95" />
+                  <stop offset="65%" stopColor="#38BDF8" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#38BDF8" stopOpacity="0" />
+                </linearGradient>
+
+                {/* Concentric Band Glow Gradient */}
+                <radialGradient id="ringBand" cx="0%" cy="50%" r="100%">
+                  <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.07" />
+                  <stop offset="85%" stopColor="#38BDF8" stopOpacity="0.01" />
+                  <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* Shaded Annular Band between the two concentric arcs */}
               <path
-                d="M 186 60 A 500 500 0 0 1 186 510"
-                stroke="rgba(56, 189, 248, 0.12)"
-                strokeWidth="6"
-                strokeLinecap="round"
+                d="M 169 50 A 440 440 0 0 1 169 530 L 99 490 A 360 360 0 0 0 99 90 Z"
+                fill="url(#ringBand)"
               />
-              {/* Main sharp orbit ring */}
+
+              {/* Inner Concentric Arc (Solid) */}
               <path
-                d="M 186 60 A 500 500 0 0 1 186 510"
-                stroke="rgba(255, 255, 255, 0.14)"
+                d="M 99 90 A 360 360 0 0 1 99 490"
+                stroke="rgba(56, 189, 248, 0.22)"
                 strokeWidth="1.5"
-                strokeDasharray="4 4"
                 strokeLinecap="round"
               />
 
-              {/* Active Connector Beam to Center Content */}
-              <line
-                x1={activeCoord.x + 14}
-                y1={activeCoord.y}
-                x2="340"
-                y2={activeCoord.y}
-                stroke="rgba(56, 189, 248, 0.6)"
+              {/* Outer Main Orbit Track (Solid) */}
+              <path
+                d="M 169 50 A 440 440 0 0 1 169 530"
+                stroke="rgba(56, 189, 248, 0.45)"
                 strokeWidth="1.5"
-                strokeDasharray="3 3"
+                strokeLinecap="round"
+              />
+
+              {/* Active SOLID Horizontal Connector Beam (extends from active node to center content) */}
+              <line
+                x1={activeCoord.x + 22}
+                y1={activeCoord.y}
+                x2="380"
+                y2={activeCoord.y}
+                stroke="url(#connectorGlow)"
+                strokeWidth="2"
+                strokeLinecap="round"
                 className="transition-all duration-300 ease-out"
               />
             </svg>
 
-            {/* Stage Nodes & Labels along the Arc */}
+            {/* Stage Nodes on the Outer Ring */}
             <div className="relative w-full h-[580px]">
               {STAGES.map((stage, idx) => {
                 const coord = NODE_COORDS[idx];
                 const isActive = activeStageIndex === idx;
-                const isCompleted = activeStageIndex > idx;
 
                 return (
                   <div
@@ -317,49 +337,31 @@ export default function MissionThread() {
                       top: `${coord.y}px`,
                       transform: "translate(-50%, -50%)",
                     }}
-                    className="flex items-center gap-3 cursor-pointer group select-none z-20"
+                    className="cursor-pointer group select-none z-20"
                   >
-                    {/* Node Dot / Badge */}
-                    <div className="relative flex items-center justify-center">
-                      {isActive && (
-                        <span className="absolute -inset-2 rounded-full bg-sky-400/20 blur-sm animate-pulse pointer-events-none" />
-                      )}
-
-                      <div
-                        className={cn(
-                          "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300",
-                          isActive
-                            ? "bg-[#080B10] border-2 border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.8)] scale-110"
-                            : isCompleted
-                            ? "bg-[#080B10] border border-sky-500/40 text-sky-400/60"
-                            : "bg-[#080B10] border border-white/15 text-slate-500 group-hover:border-white/30"
-                        )}
-                      >
-                        {isActive ? (
-                          <div className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping" />
-                        ) : isCompleted ? (
-                          <Check className="w-3.5 h-3.5 text-sky-400/80" />
-                        ) : (
-                          <span className="text-[10px] font-mono text-slate-500 font-semibold">
-                            {stage.num}
-                          </span>
-                        )}
+                    {isActive ? (
+                      /* ACTIVE NODE: Glowing Circular Badge with Icon and Label (Matching Reference) */
+                      <div className="relative flex items-center">
+                        <div className="relative w-11 h-11 rounded-full bg-[#0A1325] border-2 border-sky-400 shadow-[0_0_24px_rgba(56,189,248,0.65)] flex items-center justify-center transition-all duration-300">
+                          {/* 4-petal propeller / spark icon matching reference */}
+                          <svg
+                            className="w-5 h-5 text-sky-300 animate-pulse"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 2C12 7 7 12 2 12C7 12 12 17 12 22C12 17 17 12 22 12C17 12 12 7 12 2Z" />
+                          </svg>
+                        </div>
+                        <span className="ml-3.5 font-mono text-xs text-sky-300 font-bold tracking-widest uppercase drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]">
+                          {stage.label}
+                        </span>
                       </div>
-                    </div>
-
-                    {/* Small Technical Label */}
-                    <span
-                      className={cn(
-                        "font-mono text-xs tracking-widest uppercase transition-all duration-200",
-                        isActive
-                          ? "text-sky-300 font-bold drop-shadow-[0_0_10px_rgba(56,189,248,0.5)] translate-x-0.5"
-                          : isCompleted
-                          ? "text-slate-400 font-medium group-hover:text-slate-200"
-                          : "text-slate-500 group-hover:text-slate-300"
-                      )}
-                    >
-                      {stage.label}
-                    </span>
+                    ) : (
+                      /* INACTIVE NODE: Sleek Dark Pill Capsule on the Ring (Matching Reference "Test", "Deploy", "Iterate") */
+                      <div className="px-4 py-1.5 rounded-full bg-[#0B1220]/90 border border-slate-700/70 hover:border-sky-500/50 hover:bg-[#0E1A32] text-slate-300 hover:text-white font-mono text-xs tracking-wider transition-all duration-200 shadow-md">
+                        {stage.label}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -527,7 +529,7 @@ function StageVisualBrief() {
         <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
           <span className="text-[10px] text-slate-400">EXECUTION MODE</span>
           <div className="text-lg font-bold text-sky-400 mt-0.5">AUTONOMOUS</div>
-          <span className="text-[9px] text-slate-400">6 Agent Crew</span>
+          <span className="text-[9px] text-slate-400">6 Autonomous Agents</span>
         </div>
       </div>
 
