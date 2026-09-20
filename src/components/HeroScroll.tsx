@@ -131,15 +131,14 @@ export default function HeroScroll() {
         if (targetImage && targetImage.complete && targetImage.naturalWidth > 0) {
           const imgWidth = targetImage.naturalWidth;
           const imgHeight = targetImage.naturalHeight;
-          const headerHeight = 84;
+          const headerHeight = 0;
           const scale = displayWidth / imgWidth;
           const scaledWidth = displayWidth;
           const scaledHeight = imgHeight * scale;
-          const availableH = displayHeight - headerHeight;
           const offsetY =
-            scaledHeight < availableH
-              ? headerHeight + (availableH - scaledHeight) / 2
-              : headerHeight;
+            scaledHeight < displayHeight
+              ? (displayHeight - scaledHeight) / 2
+              : 0;
 
           ctx.fillStyle = "#0B0E14";
           ctx.fillRect(0, 0, displayWidth, displayHeight);
@@ -177,17 +176,16 @@ export default function HeroScroll() {
         const imgWidth = img1.naturalWidth;
         const imgHeight = img1.naturalHeight;
 
-        const headerHeight = 84;
+        const headerHeight = 0;
         const scale = displayWidth / imgWidth;
         const scaledWidth = displayWidth;
         const scaledHeight = imgHeight * scale;
         const offsetX = 0;
 
-        const availableH = displayHeight - headerHeight;
         const offsetY =
-          scaledHeight < availableH
-            ? headerHeight + (availableH - scaledHeight) / 2
-            : headerHeight;
+          scaledHeight < displayHeight
+            ? (displayHeight - scaledHeight) / 2
+            : 0;
 
         // Clear background
         ctx.fillStyle = "#0B0E14";

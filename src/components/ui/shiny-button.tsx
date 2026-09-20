@@ -187,6 +187,12 @@ export function ShinyButton({
 
     .${scope} span {
       z-index: 1;
+      color: var(--gleam-label);
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
     }
 
     .${scope} span::before {
