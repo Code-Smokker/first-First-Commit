@@ -3,6 +3,7 @@
 import React from "react";
 import HeroScroll from "@/components/HeroScroll";
 import HeroScrollDemo from "@/components/HeroScrollDemo";
+import MissionThread from "@/components/MissionThread";
 import ZoneReveal from "@/components/ZoneReveal";
 import CommandHubClimax from "@/components/CommandHubClimax";
 import AgentRoster from "@/components/AgentRoster";
@@ -18,6 +19,9 @@ export default function Home() {
       {/* 02. Zone Reveal 1: The Living Office (Container Scroll Tablet with Light Gate Transition) */}
       <div id="zones">
         <HeroScrollDemo />
+
+        {/* 03. The Mission Thread: Lifecycle of an Autonomous Mission */}
+        <MissionThread />
 
         {/* 04. Zone Reveal 2: Verification (Section 06) */}
         <ZoneReveal
