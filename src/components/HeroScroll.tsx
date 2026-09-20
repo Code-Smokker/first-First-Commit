@@ -113,13 +113,15 @@ export default function HeroScroll() {
       const img = pickImage(idx);
       if (!img) return;
       const { width, height, scale } = dimensionsRef.current;
-      // cover the pinned viewport, with downwards shift on the opening character frame
+      // cover the pinned viewport:
+      // image starts flush at the navbar (y = 0) with zero gap and does not go under the navbar.
+      // As user scrolls into the office scene, smoothly center vertically.
       const k = Math.max(width / img.naturalWidth, height / img.naturalHeight);
       const w = img.naturalWidth * k;
       const h = img.naturalHeight * k;
-      const topShift = Math.round(180 * Math.max(0, 1 - idx / 120));
       const x = (width - w) / 2;
-      const y = (height - h) / 2 + topShift;
+      const progress = Math.min(1, idx / 120);
+      const y = Math.round(((height - h) / 2) * progress);
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
       ctx.fillStyle = "#080B10";
       ctx.fillRect(0, 0, width, height);
@@ -170,10 +172,9 @@ export default function HeroScroll() {
         {/* Scanline Grid Effect Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E293B10_1px,transparent_1px),linear-gradient(to_bottom,#1E293B10_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
-        {/* Top & Bottom Cinematic Edge Vignette */}
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" />
+        {/* Bottom Cinematic Edge Vignette to blend into following sections */}
         <div className="absolute inset-x-0 bottom-0 h-64 sm:h-80 bg-gradient-to-t from-crew-bg via-crew-bg/75 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-vignette opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 bg-radial-vignette opacity-40 pointer-events-none" />
 
         {/* Preload Progress Indicator */}
         {!isLoaded && !initialReady && (

@@ -30,6 +30,10 @@ export function useImagePreloader(
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  // Callers pass `customFiles` as an inline array literal (new identity every render). Depending on the
+  // array itself re-ran this effect on every render, which set state, which re-rendered — an endless loop.
+  const customFilesKey = options?.customFiles?.join("|") ?? "";
+
   useEffect(() => {
     let isCancelled = false;
     const totalCount = options?.customFiles ? options.customFiles.length : frameCount;
@@ -126,7 +130,7 @@ export function useImagePreloader(
     return () => {
       isCancelled = true;
     };
-  }, [sequencePath, frameCount, options?.customFiles]);
+  }, [sequencePath, frameCount, customFilesKey]);
 
   return { images, imagesRef, progress, isLoaded, hasError };
 }

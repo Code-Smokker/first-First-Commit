@@ -110,8 +110,8 @@ export default function Navbar() {
         className={cn(
           "fixed top-0 inset-x-0 z-[100] w-full transition-all duration-300 select-none overflow-hidden",
           scrolled
-            ? "bg-black/60 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.18)] py-2.5"
-            : "bg-gradient-to-b from-black/45 via-black/20 to-transparent backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.22)] py-3.5"
+            ? "bg-black/60 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.18)]"
+            : "bg-gradient-to-b from-black/45 via-black/20 to-transparent backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.22)]"
         )}
       >
         {/* Glossy Ambient Shimmer & Radiant Top Bevel */}
@@ -121,7 +121,7 @@ export default function Navbar() {
         {/* Subtle Fading Light Sheen on Bottom Edge (No Hard Partition Line) */}
         <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-sky-400/25 via-white/20 to-transparent pointer-events-none opacity-70" />
 
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-[var(--nav-height)] flex items-center justify-between">
           {/* Brand / Logo: Big Ultron Logo with glowing aura */}
           <a
             href="#hero"

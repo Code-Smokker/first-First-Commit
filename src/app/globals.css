@@ -145,3 +145,8 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Navbar height: the header, and the hero that starts below it, both read this. */
+:root {
+  --nav-height: 76px;
+}
