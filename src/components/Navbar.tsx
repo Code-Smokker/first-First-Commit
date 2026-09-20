@@ -29,7 +29,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { key: "WORKFORCE", label: "WORKFORCE", href: "#roster" },
   { key: "HOW_IT_WORKS", label: "HOW IT WORKS", href: "#zones" },
-  { key: "CONTROL", label: "CONTROL", href: "#server-lounge" },
+  { key: "CONTROL", label: "CONTROL", href: "#mission-thread" },
   { key: "ARCHITECTURE", label: "ARCHITECTURE", href: "#architecture" },
   { key: "DOCS", label: "DOCS", href: "#docs", isDocs: true },
   { key: "COMMUNITY", label: "COMMUNITY", href: "#cta" },
