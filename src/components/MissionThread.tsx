@@ -244,7 +244,7 @@ export default function MissionThread() {
       style={{ height: "450vh" }}
     >
       {/* Pinned Viewport Container */}
-      <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12">
+      <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-6 sm:py-8">
         {/* Section Header: Eyebrow + Main Title */}
         <div className="mb-6 lg:mb-8 text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/10 text-slate-300 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase mb-2">
