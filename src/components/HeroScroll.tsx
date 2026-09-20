@@ -52,167 +52,90 @@ export default function HeroScroll() {
     276
   );
 
-  // Smooth frame interpolation refs for cinema-grade sub-frame blending
-  const currentFrameRef = useRef(0);
-  const targetFrameRef = useRef(0);
+  const TOTAL_FRAMES = 276;
+  const dirtyRef = useRef(true);
+  const lastFrameRef = useRef(-1);
+  const dimensionsRef = useRef({ width: 1920, height: 1080, scale: 1 });
 
-  // Cached canvas dimensions to avoid forced synchronous reflows inside RAF
-  const dimensionsRef = useRef({
-    width: typeof window !== "undefined" ? window.innerWidth : 1920,
-    height: typeof window !== "undefined" ? window.innerHeight : 1080,
-    dpr: 1,
-  });
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-      const displayWidth = canvas.clientWidth || window.innerWidth;
-      const displayHeight = canvas.clientHeight || window.innerHeight;
-
-      dimensionsRef.current = {
-        width: displayWidth,
-        height: displayHeight,
-        dpr: dpr,
-      };
-
-      canvas.width = displayWidth * dpr;
-      canvas.height = displayHeight * dpr;
-    };
-
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions, { passive: true });
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
-  // Ultra-smooth sub-frame RAF render loop (Cross-dissolve frame blending at 60/120fps)
+  // Canvas backing store. The source frames are 1280x720, so rendering at 2-2.5x device pixels
+  // (~5000px wide) adds no detail and only burns fill-rate — that was the scroll "hang". Cap it.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const update = () => {
+      const width = canvas.clientWidth || window.innerWidth;
+      const height = canvas.clientHeight || window.innerHeight;
+      const scale = Math.min(window.devicePixelRatio || 1, 1.5, 1920 / width);
+      dimensionsRef.current = { width, height, scale };
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      dirtyRef.current = true;
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(canvas);
+    return () => ro.disconnect();
+  }, []);
+
+  // A late-arriving frame or first paint must trigger a redraw.
+  useEffect(() => {
+    dirtyRef.current = true;
+  }, [loadProgress, initialReady]);
+
+  // Render loop: draws ONE sharp frame (no cross-dissolve, no extra lerp — Lenis already smooths the
+  // scroll), only when the frame index actually changes, and only while the hero is on screen.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
-
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    let animationId: number;
+    const usable = (img?: HTMLImageElement | null) =>
+      !!img && img.complete && img.naturalWidth > 0;
 
-    const render = () => {
-      // Direct synchronous read of scroll progress (0 latency, zero React re-renders)
-      const totalFrames = 276;
-      targetFrameRef.current = scrollYProgress.get() * (totalFrames - 1);
-
-      // Ultra-smooth lerp interpolation
-      const diff = targetFrameRef.current - currentFrameRef.current;
-      if (Math.abs(diff) > 0.001) {
-        currentFrameRef.current += diff * 0.24;
-      } else {
-        currentFrameRef.current = targetFrameRef.current;
-      }
-
-      const current = Math.min(
-        Math.max(currentFrameRef.current, 0),
-        totalFrames - 1
-      );
-
-      const { width: displayWidth, height: displayHeight, dpr } = dimensionsRef.current;
-
-      ctx.save();
-      ctx.scale(dpr, dpr);
-
-      // Reduced motion: show static end frame
-      if (prefersReducedMotion) {
-        const targetImage =
-          imagesRef.current[totalFrames - 1] ||
-          imagesRef.current[0] ||
-          initialImageRef.current;
-
-        if (targetImage && targetImage.complete && targetImage.naturalWidth > 0) {
-          const imgWidth = targetImage.naturalWidth;
-          const imgHeight = targetImage.naturalHeight;
-          const scale = Math.max(displayWidth / imgWidth, displayHeight / imgHeight);
-          const scaledWidth = imgWidth * scale;
-          const scaledHeight = imgHeight * scale;
-          const offsetX = (displayWidth - scaledWidth) / 2;
-          const offsetY = (displayHeight - scaledHeight) / 2;
-
-          ctx.fillStyle = "#0B0E14";
-          ctx.fillRect(0, 0, displayWidth, displayHeight);
-          ctx.drawImage(targetImage, offsetX, offsetY, scaledWidth, scaledHeight);
-        }
-        ctx.restore();
-        animationId = requestAnimationFrame(render);
-        return;
-      }
-
-      // SUB-FRAME BLENDING:
-      const floorIdx = Math.floor(current);
-      const ceilIdx = Math.min(floorIdx + 1, totalFrames - 1);
-      const fraction = current - floorIdx;
-
-      let img1 = imagesRef.current[floorIdx];
-      let img2 = imagesRef.current[ceilIdx];
-
-      // Fallbacks if frames are still streaming
-      if (!img1 || !img1.complete || img1.naturalWidth === 0) {
-        for (let i = floorIdx - 1; i >= 0; i--) {
-          if (imagesRef.current[i]?.complete && imagesRef.current[i].naturalWidth > 0) {
-            img1 = imagesRef.current[i];
-            break;
-          }
-        }
-        if (!img1) img1 = initialImageRef.current || imagesRef.current[0];
-      }
-
-      if (!img2 || !img2.complete || img2.naturalWidth === 0) {
-        img2 = img1;
-      }
-
-      if (img1 && img1.complete && img1.naturalWidth > 0) {
-        const imgWidth = img1.naturalWidth;
-        const imgHeight = img1.naturalHeight;
-
-        // COVER VIEWPORT SCALING: Full bleed with 2D centering (zero black bars anywhere)
-        const scale = Math.max(displayWidth / imgWidth, displayHeight / imgHeight);
-        const scaledWidth = imgWidth * scale;
-        const scaledHeight = imgHeight * scale;
-        const offsetX = (displayWidth - scaledWidth) / 2;
-        const offsetY = (displayHeight - scaledHeight) / 2;
-
-        // Clear background
-        ctx.fillStyle = "#0B0E14";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        // Draw primary base frame
-        ctx.globalAlpha = 1;
-        ctx.drawImage(img1, offsetX, offsetY, scaledWidth, scaledHeight);
-
-        // Cross-dissolve next frame for infinite sub-frame smoothness
-        if (
-          ceilIdx !== floorIdx &&
-          fraction > 0.005 &&
-          img2 &&
-          img2 !== img1 &&
-          img2.complete &&
-          img2.naturalWidth > 0
-        ) {
-          ctx.globalAlpha = fraction;
-          ctx.drawImage(img2, offsetX, offsetY, scaledWidth, scaledHeight);
-          ctx.globalAlpha = 1;
-        }
-      } else {
-        ctx.fillStyle = "#0B0E14";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-      }
-
-      ctx.restore();
-
-      animationId = requestAnimationFrame(render);
+    const pickImage = (idx: number) => {
+      if (usable(imagesRef.current[idx])) return imagesRef.current[idx];
+      for (let i = idx - 1; i >= 0; i--) if (usable(imagesRef.current[i])) return imagesRef.current[i];
+      return usable(initialImageRef.current) ? initialImageRef.current : null;
     };
 
-    animationId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationId);
+    let raf = 0;
+    const draw = () => {
+      raf = requestAnimationFrame(draw);
+      const idx = prefersReducedMotion
+        ? TOTAL_FRAMES - 1
+        : Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(scrollYProgress.get() * (TOTAL_FRAMES - 1))));
+      if (idx === lastFrameRef.current && !dirtyRef.current) return;
+
+      const img = pickImage(idx);
+      if (!img) return;
+      const { width, height, scale } = dimensionsRef.current;
+      // cover the pinned viewport, with downwards shift on the opening character frame
+      const k = Math.max(width / img.naturalWidth, height / img.naturalHeight);
+      const w = img.naturalWidth * k;
+      const h = img.naturalHeight * k;
+      const topShift = Math.round(180 * Math.max(0, 1 - idx / 120));
+      const x = (width - w) / 2;
+      const y = (height - h) / 2 + topShift;
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      ctx.fillStyle = "#080B10";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, x, y, w, h);
+      lastFrameRef.current = idx;
+      dirtyRef.current = false;
+    };
+
+    const start = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { dirtyRef.current = true; start(); } else stop(); },
+      { rootMargin: "100px" }
+    );
+    io.observe(container);
+    return () => { io.disconnect(); stop(); };
   }, [prefersReducedMotion, scrollYProgress, imagesRef]);
 
   // Framer Motion Checkpoint Opacities & Transforms
@@ -237,11 +160,11 @@ export default function HeroScroll() {
       className="relative h-[400vh] bg-crew-bg"
     >
       {/* Pinned Sticky Viewport */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+      <div className="sticky top-[var(--nav-height)] h-[calc(100vh-var(--nav-height))] w-full overflow-hidden isolate flex items-center justify-center">
         {/* Full-width Native Canvas with Hardware Acceleration */}
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full select-none pointer-events-none transform-gpu"
+          className="absolute inset-0 w-full h-full select-none pointer-events-none"
         />
 
         {/* Scanline Grid Effect Overlay */}
@@ -254,7 +177,7 @@ export default function HeroScroll() {
 
         {/* Preload Progress Indicator */}
         {!isLoaded && !initialReady && (
-          <div className="absolute bottom-8 left-8 z-30 flex items-center gap-3 bg-crew-surface/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-crew-border">
+          <div className="absolute bottom-8 left-8 z-30 flex items-center gap-3 bg-crew-surface/90 px-4 py-2.5 rounded-xl border border-crew-border">
             <div className="w-4 h-4 border-2 border-crew-blue border-t-transparent rounded-full animate-spin" />
             <div className="flex flex-col">
               <span className="text-[10px] font-mono tracking-widest text-slate-400">
@@ -327,7 +250,7 @@ export default function HeroScroll() {
           className="absolute inset-0 flex flex-col items-center justify-end text-center px-4 sm:px-6 pb-6 sm:pb-8 pointer-events-none z-20"
         >
           <div className="max-w-5xl w-full">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/30 text-red-400 text-[11px] font-mono tracking-widest uppercase mb-2 shadow-[0_0_20px_rgba(239,68,68,0.25)]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[11px] font-mono tracking-widest uppercase mb-2 shadow-[0_0_20px_rgba(239,68,68,0.25)]">
               <AlertTriangle className="w-3.5 h-3.5" />
               THE PROBLEM
             </div>
@@ -345,7 +268,7 @@ export default function HeroScroll() {
 
             {/* 4 Glassmorphic Problem Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-left mb-3 pointer-events-auto">
-              <div className="p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 hover:border-red-500/30 transition-colors shadow-lg">
+              <div className="p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 hover:border-red-500/30 transition-colors shadow-lg">
                 <span className="text-xs font-mono font-bold text-red-400 block mb-1">
                   &ldquo;One task at a time.&rdquo;
                 </span>
@@ -354,7 +277,7 @@ export default function HeroScroll() {
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 hover:border-amber-500/30 transition-colors shadow-lg">
+              <div className="p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 hover:border-amber-500/30 transition-colors shadow-lg">
                 <span className="text-xs font-mono font-bold text-amber-400 block mb-1">
                   &ldquo;Disconnected tools.&rdquo;
                 </span>
@@ -363,7 +286,7 @@ export default function HeroScroll() {
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 hover:border-crew-blue/30 transition-colors shadow-lg">
+              <div className="p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 hover:border-crew-blue/30 transition-colors shadow-lg">
                 <span className="text-xs font-mono font-bold text-crew-blue block mb-1">
                   &ldquo;Zero visibility.&rdquo;
                 </span>
@@ -372,7 +295,7 @@ export default function HeroScroll() {
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 hover:border-purple-500/30 transition-colors shadow-lg">
+              <div className="p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 hover:border-purple-500/30 transition-colors shadow-lg">
                 <span className="text-xs font-mono font-bold text-purple-400 block mb-1">
                   &ldquo;Uncontrolled actions.&rdquo;
                 </span>
@@ -382,7 +305,7 @@ export default function HeroScroll() {
               </div>
             </div>
 
-            <div className="inline-block px-3.5 py-1 rounded-full bg-[#0B0E14]/80 backdrop-blur-md border border-crew-border font-mono text-[11px] text-white">
+            <div className="inline-block px-3.5 py-1 rounded-full bg-[#0B0E14]/80 border border-crew-border font-mono text-[11px] text-white">
               Ultron turns scattered AI tools into <span className="text-crew-blue font-bold">one coordinated workforce</span>.
             </div>
           </div>
@@ -396,7 +319,7 @@ export default function HeroScroll() {
           className="absolute inset-0 flex flex-col items-center justify-end text-center px-4 sm:px-6 pb-6 sm:pb-8 pointer-events-none z-20"
         >
           <div className="max-w-5xl w-full">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-crew-blue/10 backdrop-blur-xl border border-crew-blue/40 text-crew-blue text-[11px] font-mono tracking-widest uppercase mb-2 shadow-neon-blue">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-crew-blue/10 border border-crew-blue/40 text-crew-blue text-[11px] font-mono tracking-widest uppercase mb-2 shadow-neon-blue">
               <Workflow className="w-3.5 h-3.5" />
               AUTONOMOUS EXECUTION
             </div>
@@ -414,42 +337,42 @@ export default function HeroScroll() {
 
             {/* 6 Story Steps in Glassmorphism */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-left mb-3 pointer-events-auto">
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-crew-blue/30 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-crew-blue/30 shadow-md">
                 <span className="text-[10px] font-mono text-crew-blue font-bold block">01 // BRIEF</span>
                 <span className="text-xs font-display font-bold text-white block mt-0.5">
                   &ldquo;Build a landing page.&rdquo;
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 shadow-md">
                 <span className="text-[10px] font-mono text-slate-400 font-bold block">02 // PLAN</span>
                 <span className="text-xs text-slate-300 font-sans block mt-0.5">
                   Lead creates the plan.
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 shadow-md">
                 <span className="text-[10px] font-mono text-slate-400 font-bold block">03 // DELEGATE</span>
                 <span className="text-xs text-slate-300 font-sans block mt-0.5">
                   Agents receive work.
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 shadow-md">
                 <span className="text-[10px] font-mono text-slate-400 font-bold block">04 // EXECUTE</span>
                 <span className="text-xs text-slate-300 font-sans block mt-0.5">
                   Runs in background.
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-white/10 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-white/10 shadow-md">
                 <span className="text-[10px] font-mono text-slate-400 font-bold block">05 // VERIFY</span>
                 <span className="text-xs text-slate-300 font-sans block mt-0.5">
                   Outputs checked first.
                 </span>
               </div>
 
-              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 backdrop-blur-xl border border-emerald-500/30 shadow-md">
+              <div className="p-2.5 sm:p-3 rounded-xl bg-[#0B0E14]/90 border border-emerald-500/30 shadow-md">
                 <span className="text-[10px] font-mono text-emerald-400 font-bold block">06 // SHIP</span>
                 <span className="text-xs text-slate-200 font-sans block mt-0.5">
                   Assembled into result.
@@ -457,7 +380,7 @@ export default function HeroScroll() {
               </div>
             </div>
 
-            <div className="inline-block px-3.5 py-1 rounded-full bg-[#0B0E14]/80 backdrop-blur-md border border-crew-border font-mono text-[11px] text-slate-300">
+            <div className="inline-block px-3.5 py-1 rounded-full bg-[#0B0E14]/80 border border-crew-border font-mono text-[11px] text-slate-300">
               Your laptop can close. <span className="text-crew-blue font-bold">The mission doesn&apos;t have to.</span>
             </div>
           </div>
